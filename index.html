@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sistema de Gestión</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #00008f 0%, #0047ab 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            width: 400px;
+            max-width: 90%;
+        }
+        h1 {
+            color: #00008f;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .error.show { display: block; }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 15px;
+        }
+        input:focus {
+            outline: none;
+            border-color: #00008f;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #00008f;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover { background: #00005f; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Sistema de Gestión</h1>
+        <div id="error" class="error"></div>
+        <form id="loginForm">
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Contraseña" required>
+            <button type="submit" id="btn">Iniciar Sesión</button>
+        </form>
+    </div>
+
+    <script>
+        // ⚠️ CAMBIAR ESTAS CREDENCIALES
+        const SUPABASE_URL = 'https://tu-proyecto.supabase.co';
+        const SUPABASE_KEY = 'tu-clave-anonima-aqui';
+
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn');
+            const error = document.getElementById('error');
+
+            error.classList.remove('show');
+            btn.disabled = true;
+            btn.textContent = 'Cargando...';
+
+            try {
+                const { data, error: err } = await supabase.auth.signInWithPassword({
+                    email: document.getElementById('email').value,
+                    password: document.getElementById('password').value
+                });
+
+                if (err) {
+                    error.textContent = 'Email o contraseña incorrectos';
+                    error.classList.add('show');
+                } else {
+                    window.location.href = 'dashboard.html';
+                }
+            } catch (e) {
+                error.textContent = 'Error: ' + e.message;
+                error.classList.add('show');
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'Iniciar Sesión';
+        });
+    </script>
+</body>
+</html>
